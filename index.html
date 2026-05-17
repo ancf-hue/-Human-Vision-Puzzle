@@ -12,25 +12,23 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#050512">
     
-    <!-- ✅ Open Graph (для красивых превью в соцсетях) -->
+    <!-- ✅ Open Graph -->
     <meta property="og:title" content="🧩 Анти-ИИ: Мозаика">
     <meta property="og:description" content="Собери образ, разбитый ИИ. Офлайн-пазл про силу человеческого разума. Бесплатно, без рекламы.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://human-vision-puzzle.vercel.app/">
     <meta property="og:image" content="https://human-vision-puzzle.vercel.app/favicon.ico">
-    <meta property="og:site_name" content="Anti-AI Shield">
     
     <!-- ✅ Twitter Card -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="🧩 Анти-ИИ: Мозаика">
     <meta name="twitter:description" content="Собери образ, разбитый ИИ. Офлайн-пазл про силу человеческого разума.">
-    <meta name="twitter:image" content="https://human-vision-puzzle.vercel.app/favicon.ico">
     
-    <!-- ✅ Вебмастера (вставьте свои коды подтверждения) -->
-    <!-- <meta name="yandex-verification" content="ВАШ_КОД_ЯНДЕКС" /> -->
-    <!-- <meta name="google-site-verification" content="ВАШ_КОД_GOOGLE" /> -->
+    <!-- ✅ Вебмастера (раскомментируйте и вставьте свои коды) -->
+    <!-- <meta name="yandex-verification" content="ВАШ_КОД" /> -->
+    <!-- <meta name="google-site-verification" content="ВАШ_КОД" /> -->
     
-    <!-- ✅ Favicon - ТОЛЬКО ваш файл -->
+    <!-- ✅ Favicon -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <link rel="apple-touch-icon" href="./favicon.ico">
@@ -42,7 +40,6 @@
         canvas:active { cursor: grabbing; }
         .ui-element { position: absolute; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9); z-index: 10; font-family: monospace; pointer-events: none; }
         
-        /* === ✅ ЛОГОТИП - КАК В ПЕРВОМ ПРОЕКТЕ === */
         #top-logo-container { 
             top: 15px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px;
             z-index: 999; animation: logoPulse 2s ease-in-out infinite;
@@ -51,9 +48,18 @@
         #top-logo-container img { width: 22px; height: 22px; filter: drop-shadow(0 0 8px #00ffaa) drop-shadow(0 0 15px #00ffaa66); }
         @keyframes logoPulse { 0%,100%{text-shadow:0 0 10px #00ffaa88} 50%{text-shadow:0 0 25px #00ffaa,0 0 50px #00ffaa44} }
         
-        #task-box { top: 55px; left: 0; width: 100%; text-align: center; font-size: 14px; color: #ffaa00; font-weight: bold; }
+        #sound-toggle {
+            position: absolute; right: 20px; top: 15px; width: 36px; height: 36px;
+            background: rgba(0,0,0,0.6); border: 2px solid #00ffaa; border-radius: 50%;
+            color: #00ffaa; font-size: 18px; cursor: pointer; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; pointer-events: auto;
+        }
+        #sound-toggle:hover { transform: scale(1.1); box-shadow: 0 0 15px #00ffaa66; }
+        #sound-toggle.muted { border-color: #ff6666; color: #ff6666; }
         
-        /* === СТАРТОВЫЙ ЭКРАН === */
+        #task-box { top: 55px; left: 0; width: 100%; text-align: center; font-size: 14px; color: #ffaa00; font-weight: bold; transition: all 0.3s; }
+        
         #info-overlay { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             background: linear-gradient(135deg, rgba(5,5,18,0.98) 0%, rgba(10,5,25,0.98) 100%);
@@ -65,7 +71,6 @@
         #menu-title { color: #00ffaa; text-align:center; letter-spacing:1px; margin: 10px 0 15px 0; font-size: 20px; text-shadow: 0 0 15px #00ffaa88; }
         #info-overlay > p { color:#aaa; text-align:center; padding: 0 20px; font-size:13px; max-width:80%; margin:0 0 20px 0; line-height:1.4; }
         
-        /* === БЛОК ПОДДЕРЖКИ === */
         #support-box {
             background: rgba(10, 15, 40, 0.9); border: 2px solid #6699ff; border-radius: 16px;
             padding: 18px 15px; max-width: 320px; width: 100%; margin: 0 0 20px 0;
@@ -91,13 +96,20 @@
         .btn { padding: 14px 38px; font-size: 15px; font-weight: bold; color: #fff; background: linear-gradient(45deg, #ff0055, #aa00ff); border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 0 15px rgba(255,0,85,0.4); pointer-events: auto; margin-top: 10px; transition: all 0.2s; }
         .btn:hover { transform: scale(1.03); box-shadow: 0 0 25px rgba(255,0,85,0.7); }
         
-        /* === СКРЫТИЕ СКРОЛЛБАРА === */
+        #loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #00ffaa; font-size: 14px; z-index: 100; display: none;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+        
         * { scrollbar-width: none; -ms-overflow-style: none; }
         *::-webkit-scrollbar { display: none; }
         
         @media (max-width: 400px) {
             #top-logo-text { font-size: 14px; }
             #top-logo-container img { width: 20px; height: 20px; }
+            #sound-toggle { width: 32px; height: 32px; font-size: 16px; }
             .btn { padding: 12px 32px; font-size: 16px; }
             #support-box { padding: 15px 12px; }
             .phone-block strong { font-size: 15px; }
@@ -107,20 +119,20 @@
 <body>
 
 <div id="game-container">
-    <!-- ✅ ЛОГОТИП -->
     <div id="top-logo-container" class="ui-element">
         <img src="./favicon.ico" alt="Logo">
         <span id="top-logo-text">АНТИ-ИИ: МОЗАИКА</span>
     </div>
     
+    <button id="sound-toggle" aria-label="Включить/выключить звук">🔊</button>
+    <div id="loading">⏳ Загрузка...</div>
+    
     <div id="task-box" class="ui-element">СОБЕРИ ОБРАЗ, РАЗБИТЫЙ ИИ</div>
     
-    <!-- СТАРТОВЫЙ ЭКРАН -->
     <div id="info-overlay">
         <h2 id="menu-title">🧩 АНТИ-ИИ: МОЗАИКА</h2>
         <p>ИИ сгенерировал этот образ, но разбил его на части. Только человек может увидеть целостность и собрать картинку вручную.</p>
         
-        <!-- БЛОК ПОДДЕРЖКИ -->
         <div id="support-box">
             <h3>🤝 ПОДДЕРЖАТЬ ПРОЕКТ</h3>
             <span class="heart">💙</span>
@@ -128,7 +140,7 @@
             <p>Если проект помог вам или вашим близким — можете поддержать разработку добровольным переводом.</p>
             <div class="phone-block">
                 <strong>📱 8-920-227-56-76</strong>
-                <button class="copy-btn" id="copyPhone" onclick="copyPhone()">📋 Копировать номер</button>
+                <button class="copy-btn" id="copyPhone">📋 Копировать номер</button>
                 <p class="note">✅ Деньги придут мгновенно. <span>Без комиссии.</span> Безопасно.</p>
             </div>
             <p class="heart">❤️ Спасибо за поддержку!</p>
@@ -140,68 +152,150 @@
 </div>
 
 <script>
-    // ================== КОПИРОВАНИЕ НОМЕРА ==================
-    function copyPhone() {
-        const phone = '8-920-227-56-76';
-        navigator.clipboard.writeText(phone).then(() => {
-            const btn = document.getElementById('copyPhone');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '✅ Скопировано!'; btn.classList.add('copied');
-            setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('copied'); }, 2000);
-        }).catch(() => {
-            const ta = document.createElement('textarea'); ta.value = phone; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-            const btn = document.getElementById('copyPhone'); btn.innerHTML = '✅ Скопировано!'; btn.classList.add('copied');
-            setTimeout(() => { btn.innerHTML = '📋 Копировать номер'; btn.classList.remove('copied'); }, 2000);
-        });
-    }
-
+    // ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
     const container = document.getElementById('game-container');
     const infoOverlay = document.getElementById('info-overlay');
     const actionBtn = document.getElementById('action-btn');
     const menuTitle = document.getElementById('menu-title');
     const taskBox = document.getElementById('task-box');
+    const soundToggle = document.getElementById('sound-toggle');
+    const copyPhoneBtn = document.getElementById('copyPhone');
+    const loadingEl = document.getElementById('loading');
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     container.appendChild(canvas);
 
-    // === ИГРОВЫЕ ПЕРЕМЕННЫЕ ===
-    let isPlaying = false, isComplete = false, lastTime = 0;
+    let isPlaying = false, isComplete = false;
     let pieces = [], particles = [], bubbles = [], bubblePopEffects = [];
-    let bubbleSpawnTimer = 0, sparkTimer = 0;
+    let bubbleSpawnTimer = 0;
     let draggedPiece = null, dragOffset = {x:0, y:0};
     let snapThreshold = 30;
+    let soundMuted = false;
+    let hintTimeout = null;
+    
+    // === 🔊 АУДИО ===
+    let audioCtx = null;
+    
+    function initAudio() {
+        if(!audioCtx) {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+            catch(e) { console.warn('Web Audio API не поддерживается'); return; }
+        }
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    
+    function playSound(type) {
+        if(soundMuted) return;
+        if(!audioCtx) { initAudio(); if(!audioCtx) return; }
+        if(audioCtx.state !== 'running') {
+            audioCtx.resume().then(() => playSound(type)).catch(()=>{});
+            return;
+        }
+        try {
+            const now = audioCtx.currentTime;
+            const gainNode = audioCtx.createGain();
+            gainNode.connect(audioCtx.destination);
+            
+            switch(type) {
+                case 'drag':
+                    const osc1 = audioCtx.createOscillator();
+                    osc1.connect(gainNode); osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(300, now);
+                    gainNode.gain.setValueAtTime(0.03, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now+0.08);
+                    osc1.start(now); osc1.stop(now+0.08);
+                    break;
+                case 'snap':
+                    const osc2 = audioCtx.createOscillator();
+                    osc2.connect(gainNode); osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(500, now);
+                    osc2.frequency.exponentialRampToValueAtTime(800, now+0.1);
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now+0.2);
+                    osc2.start(now); osc2.stop(now+0.2);
+                    break;
+                case 'complete':
+                    [440, 554, 660, 880].forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i*0.12);
+                        gain.gain.setValueAtTime(0.12, now + i*0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i*0.12 + 0.3);
+                        osc.start(now + i*0.12); osc.stop(now + i*0.12 + 0.3);
+                    });
+                    break;
+                case 'pop':
+                    const osc3 = audioCtx.createOscillator();
+                    osc3.connect(gainNode); osc3.type = 'sine';
+                    osc3.frequency.setValueAtTime(700, now);
+                    osc3.frequency.exponentialRampToValueAtTime(200, now+0.18);
+                    gainNode.gain.setValueAtTime(0.06, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now+0.22);
+                    osc3.start(now); osc3.stop(now+0.22);
+                    break;
+                case 'firework':
+                    const osc4 = audioCtx.createOscillator();
+                    osc4.connect(gainNode); osc4.type = 'sawtooth';
+                    osc4.frequency.setValueAtTime(200, now);
+                    osc4.frequency.exponentialRampToValueAtTime(50, now+0.5);
+                    gainNode.gain.setValueAtTime(0.15, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now+0.8);
+                    osc4.start(now); osc4.stop(now+0.8);
+                    break;
+            }
+        } catch(e) { console.warn('Audio error:', e); }
+    }
+    
+    soundToggle.addEventListener('click', () => {
+        soundMuted = !soundMuted;
+        soundToggle.textContent = soundMuted ? '🔇' : '🔊';
+        soundToggle.classList.toggle('muted', soundMuted);
+        if(!soundMuted) {
+            if(!audioCtx) initAudio();
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+    });
 
-    // === 🖼️ ИЗОБРАЖЕНИЕ (процедурная генерация "ИИ-образа") ===
+    // ================== КОПИРОВАНИЕ НОМЕРА ==================
+    function copyPhone() {
+        const phone = '8-920-227-56-76';
+        navigator.clipboard.writeText(phone).then(() => {
+            copyPhoneBtn.innerHTML = '✅ Скопировано!'; copyPhoneBtn.classList.add('copied');
+            setTimeout(() => { copyPhoneBtn.innerHTML = '📋 Копировать номер'; copyPhoneBtn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea'); ta.value = phone; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            copyPhoneBtn.innerHTML = '✅ Скопировано!'; copyPhoneBtn.classList.add('copied');
+            setTimeout(() => { copyPhoneBtn.innerHTML = '📋 Копировать номер'; copyPhoneBtn.classList.remove('copied'); }, 2000);
+        });
+    }
+    copyPhoneBtn.addEventListener('click', copyPhone);
+
+    // ================== ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЯ ==================
     function generateAIImage() {
         const size = 200;
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = size; tempCanvas.height = size;
         const tctx = tempCanvas.getContext('2d');
-        
         const grad = tctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
         grad.addColorStop(0, '#00ffaa'); grad.addColorStop(0.5, '#0088ff'); grad.addColorStop(1, '#aa00ff');
         tctx.fillStyle = grad; tctx.fillRect(0, 0, size, size);
-        
         tctx.strokeStyle = 'rgba(255,255,255,0.3)'; tctx.lineWidth = 2;
         for(let i=0; i<8; i++) {
-            tctx.beginPath();
-            tctx.moveTo(Math.random()*size, Math.random()*size);
+            tctx.beginPath(); tctx.moveTo(Math.random()*size, Math.random()*size);
             tctx.bezierCurveTo(Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size);
             tctx.stroke();
         }
-        
         for(let i=0; i<20; i++) {
-            tctx.beginPath();
-            tctx.arc(Math.random()*size, Math.random()*size, Math.random()*3+1, 0, Math.PI*2);
-            tctx.fillStyle = `hsla(${Math.random()*360}, 100%, 70%, 0.8)`;
-            tctx.fill();
+            tctx.beginPath(); tctx.arc(Math.random()*size, Math.random()*size, Math.random()*3+1, 0, Math.PI*2);
+            tctx.fillStyle = `hsla(${Math.random()*360}, 100%, 70%, 0.8)`; tctx.fill();
         }
         return tempCanvas;
     }
 
-    // === 🧩 СОЗДАНИЕ ПАЗЛОВ ===
-    function createPuzzlePieces(image, rows=3, cols=3) {
-        const pieceW = image.width / cols, pieceH = image.height / rows;
+    // ================== СОЗДАНИЕ ПАЗЛОВ ==================
+    function createPuzzlePieces(image, rows, cols, gridOffsetX, gridOffsetY, pieceW, pieceH) {
         const pieces = [];
         for(let r=0; r<rows; r++) {
             for(let c=0; c<cols; c++) {
@@ -209,92 +303,270 @@
                 pCanvas.width = pieceW; pCanvas.height = pieceH;
                 const pCtx = pCanvas.getContext('2d');
                 pCtx.drawImage(image, c*pieceW, r*pieceH, pieceW, pieceH, 0, 0, pieceW, pieceH);
-                const screenW = canvas.width, screenH = canvas.height;
                 pieces.push({
-                    canvas: pCanvas, x: Math.random() * (screenW - pieceW), y: Math.random() * (screenH - pieceH),
-                    targetX: 50 + c * pieceW, targetY: 100 + r * pieceH, w: pieceW, h: pieceH,
-                    row: r, col: c, snapped: false, rotation: (Math.random() - 0.5) * 0.3,
-                    rotSpeed: (Math.random() - 0.5) * 0.02, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5
+                    canvas: pCanvas,
+                    x: Math.random() * (canvas.width - pieceW),
+                    y: Math.random() * (canvas.height - pieceH),
+                    targetX: gridOffsetX + c * pieceW,
+                    targetY: gridOffsetY + r * pieceH,
+                    w: pieceW, h: pieceH, row: r, col: c, snapped: false,
+                    rotation: (Math.random() - 0.5) * 0.3,
+                    rotSpeed: (Math.random() - 0.5) * 0.02,
+                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3
                 });
             }
         }
         return pieces;
     }
 
-    // === ✨ ЭФФЕКТЫ ===
+    // ================== ЭФФЕКТЫ ==================
     function createParticles(x, y, color, count=12) {
-        for(let i=0; i<count; i++) particles.push({x, y, vx:(Math.random()-0.5)*1.5, vy:(Math.random()-0.5)*1.5-0.5, life:1, color, size:Math.random()*4+2});
+        for(let i=0; i<count; i++) particles.push({
+            x, y, vx:(Math.random()-0.5)*1.5, vy:(Math.random()-0.5)*1.5-0.5,
+            life:1, color, size:Math.random()*4+2
+        });
     }
     function createFirework(x, y, color) {
-        for(let i=0; i<25; i++) { const a=(i/25)*Math.PI*2, s=Math.random()*0.7+0.3;
-            particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s-0.2, life:1, color, size:Math.random()*3+2, isFirework:true}); }
+        playSound('firework');
+        for(let i=0; i<25; i++) {
+            const a=(i/25)*Math.PI*2, s=Math.random()*0.7+0.3;
+            particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s-0.2, life:1, color, size:Math.random()*3+2, isFirework:true});
+        }
     }
     function drawParticles() {
         for(let i=particles.length-1; i>=0; i--) {
-            let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= p.isFirework ? 0.015 : 0.025; p.vy += 0.01;
+            let p = particles[i];
+            p.x += p.vx; p.y += p.vy; p.life -= p.isFirework ? 0.015 : 0.025; p.vy += 0.01;
             if(p.life <= 0) { particles.splice(i,1); continue; }
             ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI*2);
             const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*p.life);
-            grad.addColorStop(0, p.color); grad.addColorStop(1, 'transparent'); ctx.fillStyle = grad;
-            ctx.shadowBlur = p.isFirework ? 20 : 15; ctx.shadowColor = p.color; ctx.fill(); ctx.shadowBlur = 0;
+            grad.addColorStop(0, p.color); grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad; ctx.shadowBlur = p.isFirework ? 20 : 15;
+            ctx.shadowColor = p.color; ctx.fill(); ctx.shadowBlur = 0;
         }
     }
     function createBubble() {
         const colors = ['rgba(0,255,170,0.15)','rgba(102,153,255,0.15)','rgba(255,102,170,0.15)'];
-        bubbles.push({x:Math.random()*canvas.width, y:canvas.height+20, size:Math.random()*15+10, speed:Math.random()*0.8+0.3,
-            wobble:Math.random()*Math.PI*2, wobbleSpeed:Math.random()*0.03+0.01, color:colors[Math.floor(Math.random()*colors.length)], popTimer:Math.random()*300+150});
+        bubbles.push({
+            x: Math.random()*canvas.width, y: canvas.height+20,
+            size: Math.random()*15+10, speed: Math.random()*0.8+0.3,
+            wobble: Math.random()*Math.PI*2, wobbleSpeed: Math.random()*0.03+0.01,
+            color: colors[Math.floor(Math.random()*colors.length)], popTimer: Math.random()*300+150
+        });
     }
     function createBubblePop(x, y, color) {
-        for(let i=0; i<6; i++) { const a=(i/6)*Math.PI*2, s=Math.random()*0.8+0.3;
-            bubblePopEffects.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, life:1, color, size:Math.random()*2+1}); }
+        playSound('pop');
+        for(let i=0; i<6; i++) {
+            const a=(i/6)*Math.PI*2, s=Math.random()*0.8+0.3;
+            bubblePopEffects.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, life:1, color, size:Math.random()*2+1});
+        }
     }
     function drawBubbles() {
-        bubbleSpawnTimer++; if(bubbleSpawnTimer%50===0 && bubbles.length<6) createBubble();
+        bubbleSpawnTimer++;
+        if(bubbleSpawnTimer%50===0 && bubbles.length<6) createBubble();
         for(let i=bubbles.length-1; i>=0; i--) {
-            let b = bubbles[i]; b.y -= b.speed; b.wobble += b.wobbleSpeed; b.x += Math.sin(b.wobble)*0.3; b.popTimer--;
-            if(b.popTimer<=0 || b.y < -20) { createBubblePop(b.x, b.y, b.color); playSound('pop'); bubbles.splice(i,1); continue; }
-            ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.strokeStyle = b.color; ctx.lineWidth = 1.5; ctx.stroke();
-            ctx.beginPath(); ctx.arc(b.x - b.size*0.3, b.y - b.size*0.3, b.size*0.25, 0, Math.PI*2); ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
+            let b = bubbles[i];
+            b.y -= b.speed; b.wobble += b.wobbleSpeed; b.x += Math.sin(b.wobble)*0.3; b.popTimer--;
+            if(b.popTimer<=0 || b.y + b.size < 0) { createBubblePop(b.x, b.y, b.color); bubbles.splice(i,1); continue; }
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+            ctx.strokeStyle = b.color; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(b.x - b.size*0.3, b.y - b.size*0.3, b.size*0.25, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
         }
         for(let i=bubblePopEffects.length-1; i>=0; i--) {
-            let p = bubblePopEffects[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+            let p = bubblePopEffects[i];
+            p.x += p.vx; p.y += p.vy; p.life -= 0.04;
             if(p.life<=0) { bubblePopEffects.splice(i,1); continue; }
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2); ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.fill(); ctx.globalAlpha = 1;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2);
+            ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.fill(); ctx.globalAlpha = 1;
         }
     }
 
-    // === 🔊 ЗВУК ===
-    let audioEnabled = false, audioCtx = null;
-    function initAudio() { if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); audioEnabled = true; } if(audioCtx.state === 'suspended') audioCtx.resume(); }
-    function playSound(type) {
-        if(!audioEnabled || !audioCtx) return; if(audioCtx.state === 'suspended') audioCtx.resume();
-        try {
-            const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); const n = audioCtx.currentTime;
-            if(type==='drag') { o.type='sine'; o.frequency.setValueAtTime(300,n); g.gain.setValueAtTime(0.03,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.05); o.start(n); o.stop(n+0.05); }
-            else if(type==='snap') { o.type='triangle'; o.frequency.setValueAtTime(500,n); o.frequency.setValueAtTime(700,n+0.05); g.gain.setValueAtTime(0.1,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.15); o.start(n); o.stop(n+0.15); }
-            else if(type==='complete') { o.type='sine'; [440,550,660,880].forEach((f,i)=>{const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioCtx.destination);osc.frequency.setValueAtTime(f,n+i*0.1);gain.gain.setValueAtTime(0.15,n+i*0.1);gain.gain.exponentialRampToValueAtTime(0.001,n+i*0.1+0.3);osc.start(n+i*0.1);osc.stop(n+i*0.1+0.3);}); }
-            else if(type==='pop') { o.type='sine'; o.frequency.setValueAtTime(800,n); o.frequency.exponentialRampToValueAtTime(200,n+0.15); g.gain.setValueAtTime(0.05,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.15); o.start(n); o.stop(n+0.15); }
-        } catch(e){}
+    // ================== УПРАВЛЕНИЕ ==================
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
     }
-    document.body.addEventListener('click', initAudio, {once:true}); document.body.addEventListener('touchstart', initAudio, {once:true});
+    function onPointerDown(e) {
+        if(!isPlaying || isComplete) return;
+        e.preventDefault();
+        const pos = getMousePos(e);
+        for(let i=pieces.length-1; i>=0; i--) {
+            let p = pieces[i];
+            if(p.snapped) continue;
+            if(pos.x > p.x && pos.x < p.x + p.w && pos.y > p.y && pos.y < p.y + p.h) {
+                draggedPiece = p;
+                dragOffset.x = pos.x - p.x; dragOffset.y = pos.y - p.y;
+                pieces.splice(i,1); pieces.push(p);
+                playSound('drag');
+                break;
+            }
+        }
+    }
+    function onPointerMove(e) {
+        if(!draggedPiece) return;
+        e.preventDefault();
+        const pos = getMousePos(e);
+        draggedPiece.x = pos.x - dragOffset.x;
+        draggedPiece.y = pos.y - dragOffset.y;
+        draggedPiece.rotation += 0.02;
+    }
+    function onPointerUp(e) {
+        if(!draggedPiece) return;
+        e.preventDefault();
+        const dx = draggedPiece.x - draggedPiece.targetX, dy = draggedPiece.y - draggedPiece.targetY;
+        const dist = Math.hypot(dx, dy);
+        if(dist < snapThreshold) {
+            draggedPiece.x = draggedPiece.targetX; draggedPiece.y = draggedPiece.targetY;
+            draggedPiece.rotation = 0; draggedPiece.snapped = true;
+            playSound('snap');
+            createParticles(draggedPiece.x + draggedPiece.w/2, draggedPiece.y + draggedPiece.h/2, '#00ffaa', 10);
+            if(pieces.every(p => p.snapped)) {
+                isComplete = true;
+                taskBox.innerHTML = "🎉 ОБРАЗ ВОССТАНОВЛЕН!";
+                taskBox.style.color = '#00ffaa';
+                for(let i=0; i<5; i++) setTimeout(()=>createFirework(Math.random()*canvas.width, Math.random()*canvas.height*0.7, ['#ffaa00','#00ff88','#0088ff','#ff66aa','#ffff00'][i]), i*150);
+                playSound('complete');
+                setTimeout(showWinMenu, 3000);
+            }
+        } else {
+            draggedPiece.vx = -dx * 0.05; draggedPiece.vy = -dy * 0.05;
+        }
+        draggedPiece = null;
+    }
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('mouseleave', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, {passive:false});
+    canvas.addEventListener('touchmove', onPointerMove, {passive:false});
+    canvas.addEventListener('touchend', onPointerUp);
 
-    // === 🎮 УПРАВЛЕНИЕ ===
-    function getMousePos(e) { const rect = canvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
-    function onPointerDown(e) { if(!isPlaying || isComplete) return; e.preventDefault(); const pos = getMousePos(e); for(let i=pieces.length-1; i>=0; i--) { let p = pieces[i]; if(p.snapped) continue; if(pos.x > p.x && pos.x < p.x + p.w && pos.y > p.y && pos.y < p.y + p.h) { draggedPiece = p; dragOffset.x = pos.x - p.x; dragOffset.y = pos.y - p.y; pieces.splice(i,1); pieces.push(p); playSound('drag'); break; } } }
-    function onPointerMove(e) { if(!draggedPiece) return; e.preventDefault(); const pos = getMousePos(e); draggedPiece.x = pos.x - dragOffset.x; draggedPiece.y = pos.y - dragOffset.y; draggedPiece.rotation += 0.02; }
-    function onPointerUp(e) { if(!draggedPiece) return; e.preventDefault(); const dx = draggedPiece.x - draggedPiece.targetX, dy = draggedPiece.y - draggedPiece.targetY, dist = Math.hypot(dx, dy); if(dist < snapThreshold) { draggedPiece.x = draggedPiece.targetX; draggedPiece.y = draggedPiece.targetY; draggedPiece.rotation = 0; draggedPiece.snapped = true; playSound('snap'); createParticles(draggedPiece.x + draggedPiece.w/2, draggedPiece.y + draggedPiece.h/2, '#00ffaa', 10); if(pieces.every(p => p.snapped)) { isComplete = true; taskBox.innerHTML = "🎉 ОБРАЗ ВОССТАНОВЛЕН!"; taskBox.style.color = '#00ffaa'; for(let i=0; i<5; i++) setTimeout(()=>createFirework(Math.random()*canvas.width, Math.random()*canvas.height*0.7, ['#ffaa00','#00ff88','#0088ff','#ff66aa','#ffff00'][i]), i*150); playSound('complete'); setTimeout(showWinMenu, 3000); } } else { draggedPiece.vx = -dx * 0.05; draggedPiece.vy = -dy * 0.05; } draggedPiece = null; }
-    canvas.addEventListener('mousedown', onPointerDown); canvas.addEventListener('mousemove', onPointerMove); canvas.addEventListener('mouseup', onPointerUp); canvas.addEventListener('mouseleave', onPointerUp); canvas.addEventListener('touchstart', onPointerDown, {passive:false}); canvas.addEventListener('touchmove', onPointerMove, {passive:false}); canvas.addEventListener('touchend', onPointerUp);
+    // ================== ОТРИСОВКА ==================
+    function drawPieces() {
+        pieces.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x + p.w/2, p.y + p.h/2);
+            ctx.rotate(p.rotation);
+            ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.drawImage(p.canvas, -p.w/2, -p.h/2, p.w, p.h);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = p.snapped ? 'rgba(0,255,170,0.8)' : 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = p.snapped ? 3 : 1;
+            ctx.strokeRect(-p.w/2, -p.h/2, p.w, p.h);
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.fillRect(-p.w/2+5, -p.h/2+5, p.w-10, p.h/4);
+            ctx.restore();
+        });
+    }
+    function drawTargetGrid(pieceW, pieceH, rows, cols, offsetX, offsetY) {
+        ctx.strokeStyle = 'rgba(0,255,170,0.1)'; ctx.lineWidth = 1; ctx.setLineDash([5,5]);
+        for(let r=0; r<=rows; r++) { const y = offsetY + r * pieceH; ctx.beginPath(); ctx.moveTo(offsetX, y); ctx.lineTo(offsetX + cols*pieceW, y); ctx.stroke(); }
+        for(let c=0; c<=cols; c++) { const x = offsetX + c * pieceW; ctx.beginPath(); ctx.moveTo(x, offsetY); ctx.lineTo(x, offsetY + rows*pieceH); ctx.stroke(); }
+        ctx.setLineDash([]);
+    }
 
-    // === 🎨 ОТРИСОВКА ===
-    function drawPieces() { pieces.forEach(p => { ctx.save(); ctx.translate(p.x + p.w/2, p.y + p.h/2); ctx.rotate(p.rotation); ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.drawImage(p.canvas, -p.w/2, -p.h/2, p.w, p.h); ctx.shadowBlur = 0; ctx.strokeStyle = p.snapped ? 'rgba(0,255,170,0.8)' : 'rgba(255,255,255,0.3)'; ctx.lineWidth = p.snapped ? 3 : 1; ctx.strokeRect(-p.w/2, -p.h/2, p.w, p.h); ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(-p.w/2+5, -p.h/2+5, p.w-10, p.h/4); ctx.restore(); }); }
-    function drawTargetGrid(pieceW, pieceH, rows, cols) { ctx.strokeStyle = 'rgba(0,255,170,0.1)'; ctx.lineWidth = 1; ctx.setLineDash([5,5]); for(let r=0; r<=rows; r++) { const y = 100 + r * pieceH; ctx.beginPath(); ctx.moveTo(50, y); ctx.lineTo(50 + cols*pieceW, y); ctx.stroke(); } for(let c=0; c<=cols; c++) { const x = 50 + c * pieceW; ctx.beginPath(); ctx.moveTo(x, 100); ctx.lineTo(x, 100 + rows*pieceH); ctx.stroke(); } ctx.setLineDash([]); }
-
-    // === 🎮 ИГРОВОЙ ЦИКЛ ===
-    let aiImage, pieceW, pieceH, rows=3, cols=3;
-    function startGame() { initAudio(); infoOverlay.style.display = 'none'; isPlaying = true; isComplete = false; taskBox.innerHTML = "Перетащи куски на сетку"; taskBox.style.color = '#ffaa00'; aiImage = generateAIImage(); pieceW = aiImage.width / cols; pieceH = aiImage.height / rows; pieces = createPuzzlePieces(aiImage, rows, cols); pieces.forEach(p => { p.vx = (Math.random()-0.5)*3; p.vy = (Math.random()-0.5)*3; }); particles = []; bubbles = []; bubblePopEffects = []; }
-    function showWinMenu() { isPlaying = false; menuTitle.innerHTML = "🧩 ОБРАЗ СОБРАН!<br><span style='font-size:14px;color:#00ff88;'>Ты увидел целостность там, где ИИ видел только части.</span>"; actionBtn.innerText = "НОВЫЙ ПАЗЛ"; infoOverlay.style.display = 'flex'; }
-    function loop(timestamp) { if(!lastTime) lastTime = timestamp; const dt = (timestamp - lastTime) / 1000; lastTime = timestamp; canvas.width = container.clientWidth; canvas.height = container.clientHeight; const grad = ctx.createRadialGradient(canvas.width/2, canvas.height*0.6, 0, canvas.width/2, canvas.height*0.6, canvas.width*0.8); const pulse = 0.02 + Math.sin(timestamp*0.0003)*0.01; grad.addColorStop(0, `rgba(10,15,40,${0.3+pulse})`); grad.addColorStop(0.5, `rgba(5,5,20,${0.5+pulse*0.5})`); grad.addColorStop(1, 'rgba(1,1,5,0.9)'); ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height); drawBubbles(); if(isPlaying && !isComplete) { pieces.forEach(p => { if(!p.snapped && p !== draggedPiece) { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.rotation += p.rotSpeed; if(p.x < 0 || p.x + p.w > canvas.width) p.vx *= -0.5; if(p.y < 0 || p.y + p.h > canvas.height) p.vy *= -0.5; } }); drawTargetGrid(pieceW, pieceH, rows, cols); } drawPieces(); drawParticles(); requestAnimationFrame(loop); }
-    actionBtn.addEventListener('click', startGame); window.addEventListener('resize', () => { canvas.width = container.clientWidth; canvas.height = container.clientHeight; }); requestAnimationFrame(loop);
+    // ================== ИГРОВОЙ ЦИКЛ ==================
+    let aiImage, pieceW, pieceH, rows=3, cols=3, gridOffsetX, gridOffsetY;
+    
+    function startGame() {
+        loadingEl.style.display = 'block';
+        setTimeout(() => {
+            infoOverlay.style.display = 'none';
+            loadingEl.style.display = 'none';
+            isPlaying = true; isComplete = false;
+            taskBox.innerHTML = "Перетащи куски на сетку";
+            taskBox.style.color = '#ffaa00';
+            
+            aiImage = generateAIImage();
+            pieceW = aiImage.width / cols; pieceH = aiImage.height / rows;
+            gridOffsetX = Math.max(20, (canvas.width - pieceW * cols) / 2);
+            gridOffsetY = Math.max(80, (canvas.height - pieceH * rows) / 2);
+            
+            pieces = createPuzzlePieces(aiImage, rows, cols, gridOffsetX, gridOffsetY, pieceW, pieceH);
+            particles = []; bubbles = []; bubblePopEffects = [];
+            
+            clearTimeout(hintTimeout);
+            hintTimeout = setTimeout(() => {
+                if(isPlaying && !isComplete && pieces.some(p => !p.snapped)) {
+                    taskBox.innerHTML = "👆 Перетащи кусочек на сетку";
+                    setTimeout(() => { if(isPlaying && !isComplete) taskBox.innerHTML = "Перетащи куски на сетку"; }, 3000);
+                }
+            }, 5000);
+        }, 150); // ✅ Уменьшено до 150ms для более быстрого старта
+    }
+    
+    function showWinMenu() {
+        isPlaying = false;
+        menuTitle.innerHTML = "🧩 ОБРАЗ СОБРАН!<br><span style='font-size:14px;color:#00ff88;'>Ты увидел целостность там, где ИИ видел только части.</span>";
+        actionBtn.innerText = "НОВЫЙ ПАЗЛ";
+        infoOverlay.style.display = 'flex';
+    }
+    
+    // ✅ ИСПРАВЛЕНО: убрана неиспользуемая переменная lastTime
+    function loop() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        
+        const grad = ctx.createRadialGradient(canvas.width/2, canvas.height*0.6, 0, canvas.width/2, canvas.height*0.6, canvas.width*0.8);
+        const pulse = 0.02 + Math.sin(performance.now()*0.0003)*0.01;
+        grad.addColorStop(0, `rgba(10,15,40,${0.3+pulse})`);
+        grad.addColorStop(0.5, `rgba(5,5,20,${0.5+pulse*0.5})`);
+        grad.addColorStop(1, 'rgba(1,1,5,0.9)');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        drawBubbles();
+        
+        if(isPlaying && !isComplete) {
+            pieces.forEach(p => {
+                if(!p.snapped && p !== draggedPiece) {
+                    p.x += p.vx; p.y += p.vy;
+                    p.vx *= 0.98; p.vy *= 0.98;
+                    p.rotation += p.rotSpeed;
+                    
+                    const maxSpeed = 5;
+                    if(p.x < 0) { p.x = 0; p.vx = -p.vx * 0.5; }
+                    if(p.x + p.w > canvas.width) { p.x = canvas.width - p.w; p.vx = -p.vx * 0.5; }
+                    if(p.y < 0) { p.y = 0; p.vy = -p.vy * 0.5; }
+                    if(p.y + p.h > canvas.height) { p.y = canvas.height - p.h; p.vy = -p.vy * 0.5; }
+                    p.vx = Math.min(maxSpeed, Math.max(-maxSpeed, p.vx));
+                    p.vy = Math.min(maxSpeed, Math.max(-maxSpeed, p.vy));
+                }
+            });
+            drawTargetGrid(pieceW, pieceH, rows, cols, gridOffsetX, gridOffsetY);
+        }
+        
+        drawPieces();
+        drawParticles();
+        requestAnimationFrame(loop);
+    }
+    
+    // === РЕСАЙЗ ===
+    window.addEventListener('resize', () => {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        
+        if(isPlaying && !isComplete && pieces.length > 0) {
+            gridOffsetX = Math.max(20, (canvas.width - pieceW * cols) / 2);
+            gridOffsetY = Math.max(80, (canvas.height - pieceH * rows) / 2);
+            pieces.forEach((p, idx) => {
+                if(!p.snapped) {
+                    const r = Math.floor(idx / cols);
+                    const c = idx % cols;
+                    p.targetX = gridOffsetX + c * pieceW;
+                    p.targetY = gridOffsetY + r * pieceH;
+                }
+            });
+        }
+    });
+    
+    // === ЗАПУСК ===
+    actionBtn.addEventListener('click', () => { initAudio(); startGame(); });
+    canvas.addEventListener('click', initAudio, {once:true});
+    canvas.addEventListener('touchstart', initAudio, {once:true});
+    requestAnimationFrame(loop);
 </script>
 </body>
 </html>

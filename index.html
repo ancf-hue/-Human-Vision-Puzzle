@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Анти-ИИ Пазл | Собери образ</title>
+    
+    <!-- ✅ ТОЛЬКО favicon.ico - без заглушек -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050512; font-family: sans-serif; touch-action: none; user-select: none; }
+        #game-container { position: relative; width: 100vw; height: 100vh; max-width: 56.25vh; max-height: 177.77vw; margin: 0 auto; background: #020208; overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+        canvas:active { cursor: grabbing; }
+        .ui-element { position: absolute; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9); z-index: 10; font-family: monospace; pointer-events: none; }
+        
+        /* === ✅ ЛОГОТИП - КАК В ПЕРВОМ ПРОЕКТЕ === */
+        #top-logo-container { 
+            top: 15px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px;
+            z-index: 999; animation: logoPulse 2s ease-in-out infinite;
+        }
+        #top-logo-text { font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #00ffaa; text-shadow: 0 0 10px rgba(0,255,170,0.5); white-space: nowrap; }
+        #top-logo-container img { width: 22px; height: 22px; filter: drop-shadow(0 0 8px #00ffaa) drop-shadow(0 0 15px #00ffaa66); }
+        @keyframes logoPulse { 0%,100%{text-shadow:0 0 10px #00ffaa88} 50%{text-shadow:0 0 25px #00ffaa,0 0 50px #00ffaa44} }
+        
+        #task-box { top: 55px; left: 0; width: 100%; text-align: center; font-size: 14px; color: #ffaa00; font-weight: bold; }
+        
+        /* === СТАРТОВЫЙ ЭКРАН === */
+        #info-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, rgba(5,5,18,0.98) 0%, rgba(10,5,25,0.98) 100%);
+            display: flex; flex-direction: column; align-items: center; z-index: 20; 
+            padding: 70px 15px 20px; box-sizing: border-box; overflow-y: auto;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        #info-overlay::-webkit-scrollbar { display: none; }
+        #menu-title { color: #00ffaa; text-align:center; letter-spacing:1px; margin: 10px 0 15px 0; font-size: 20px; text-shadow: 0 0 15px #00ffaa88; }
+        #info-overlay > p { color:#aaa; text-align:center; padding: 0 20px; font-size:13px; max-width:80%; margin:0 0 20px 0; line-height:1.4; }
+        
+        /* === БЛОК ПОДДЕРЖКИ === */
+        #support-box {
+            background: rgba(10, 15, 40, 0.9); border: 2px solid #6699ff; border-radius: 16px;
+            padding: 18px 15px; max-width: 320px; width: 100%; margin: 0 0 20px 0;
+            box-shadow: 0 0 25px rgba(102, 153, 255, 0.3); animation: pulseBorder 3s ease-in-out infinite;
+        }
+        @keyframes pulseBorder { 0%,100%{box-shadow:0 0 25px rgba(102,153,255,0.3)} 50%{box-shadow:0 0 40px rgba(102,153,255,0.6)} }
+        #support-box h3 { color: #6699ff; margin: 0 0 10px 0; font-size: 16px; text-align: center; text-shadow: 0 0 10px #6699ff88; }
+        #support-box p { color: #ccc; font-size: 12px; line-height: 1.5; margin: 7px 0; text-align: center; }
+        .heart { color: #ff6699; font-size: 18px; display: block; text-align: center; margin: 8px 0; animation: heartbeat 1.5s ease-in-out infinite; }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+        .phone-block { background: rgba(0, 30, 60, 0.8); border-radius: 10px; padding: 10px; margin: 12px 0; border: 1px solid #00aaff44; }
+        .phone-block strong { color: #00ffaa; font-size: 16px; letter-spacing: 1px; display: block; text-align: center; margin-bottom: 7px; font-family: monospace; }
+        .copy-btn { display: block; width: 100%; padding: 9px; background: linear-gradient(135deg, #00aaff, #0066cc); border: none; border-radius: 8px; color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; transition: all 0.2s; margin-top: 4px; pointer-events: auto; }
+        .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0, 170, 255, 0.4); }
+        .copy-btn:active { transform: translateY(0); }
+        .copy-btn.copied { background: linear-gradient(135deg, #00cc88, #009966); }
+        .note { color: #888; font-size: 10px; text-align: center; margin-top: 7px; line-height: 1.4; }
+        .note span { color: #00ffaa; }
+        .catalog-link { display: inline-flex; align-items: center; gap: 6px; color: #ffcc66; text-decoration: none; font-size: 12px; font-weight: 500; padding: 10px 16px; background: rgba(255, 204, 102, 0.15); border: 2px solid #ffcc66; border-radius: 22px; margin: 8px 0 18px 0; transition: all 0.3s; text-align: center; pointer-events: auto; }
+        .catalog-link:hover { background: rgba(255, 204, 102, 0.3); transform: scale(1.02); box-shadow: 0 0 18px rgba(255, 204, 102, 0.4); }
+        .catalog-link::before { content: "🌟"; font-size: 14px; }
+        
+        .btn { padding: 14px 38px; font-size: 15px; font-weight: bold; color: #fff; background: linear-gradient(45deg, #ff0055, #aa00ff); border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 0 15px rgba(255,0,85,0.4); pointer-events: auto; margin-top: 10px; transition: all 0.2s; }
+        .btn:hover { transform: scale(1.03); box-shadow: 0 0 25px rgba(255,0,85,0.7); }
+        
+        /* === СКРЫТИЕ СКРОЛЛБАРА === */
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+        *::-webkit-scrollbar { display: none; }
+        
+        @media (max-width: 400px) {
+            #top-logo-text { font-size: 14px; }
+            #top-logo-container img { width: 20px; height: 20px; }
+            .btn { padding: 12px 32px; font-size: 16px; }
+            #support-box { padding: 15px 12px; }
+            .phone-block strong { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- ✅ ЛОГОТИП -->
+    <div id="top-logo-container" class="ui-element">
+        <img src="./favicon.ico" alt="Logo">
+        <span id="top-logo-text">АНТИ-ИИ ПАЗЛ</span>
+    </div>
+    
+    <div id="task-box" class="ui-element">СОБЕРИ ОБРАЗ, РАЗРУШЕННЫЙ ИИ</div>
+    
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="info-overlay">
+        <h2 id="menu-title">🧩 АНТИ-ИИ ПАЗЛ</h2>
+        <p>ИИ сгенерировал этот образ, но разбил его на части. Только человек может увидеть целостность и собрать картинку вручную.</p>
+        
+        <!-- БЛОК ПОДДЕРЖКИ -->
+        <div id="support-box">
+            <h3>🤝 ПОДДЕРЖАТЬ ПРОЕКТ</h3>
+            <span class="heart">💙</span>
+            <p>Приложение бесплатное. Было и останется.</p>
+            <p>Если проект помог вам или вашим близким — можете поддержать разработку добровольным переводом.</p>
+            <div class="phone-block">
+                <strong>📱 8-920-227-56-76</strong>
+                <button class="copy-btn" id="copyPhone" onclick="copyPhone()">📋 Копировать номер</button>
+                <p class="note">✅ Деньги придут мгновенно. <span>Без комиссии.</span> Безопасно.</p>
+            </div>
+            <p class="heart">❤️ Спасибо за поддержку!</p>
+            <a href="https://ancf-hue.github.io/" target="_blank" class="catalog-link">Каталог бесплатных офлайн-приложений Anti-AI Shield</a>
+        </div>
+        
+        <button id="action-btn" class="btn">▶ НАЧАТЬ ПАЗЛ</button>
+    </div>
+</div>
+
+<script>
+    // ================== КОПИРОВАНИЕ НОМЕРА ==================
+    function copyPhone() {
+        const phone = '8-920-227-56-76';
+        navigator.clipboard.writeText(phone).then(() => {
+            const btn = document.getElementById('copyPhone');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Скопировано!'; btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea'); ta.value = phone; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            const btn = document.getElementById('copyPhone'); btn.innerHTML = '✅ Скопировано!'; btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = '📋 Копировать номер'; btn.classList.remove('copied'); }, 2000);
+        });
+    }
+
+    const container = document.getElementById('game-container');
+    const infoOverlay = document.getElementById('info-overlay');
+    const actionBtn = document.getElementById('action-btn');
+    const menuTitle = document.getElementById('menu-title');
+    const taskBox = document.getElementById('task-box');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    container.appendChild(canvas);
+
+    // === ИГРОВЫЕ ПЕРЕМЕННЫЕ ===
+    let isPlaying = false, isComplete = false, lastTime = 0;
+    let pieces = [], particles = [], bubbles = [], bubblePopEffects = [];
+    let bubbleSpawnTimer = 0, sparkTimer = 0;
+    let draggedPiece = null, dragOffset = {x:0, y:0};
+    let snapThreshold = 30; // пиксели для "прилипания"
+
+    // === 🖼️ ИЗОБРАЖЕНИЕ (процедурная генерация "ИИ-образа") ===
+    function generateAIImage() {
+        // Создаём процедурный "ИИ-образ" - абстрактный неоновый паттерн
+        const size = 200;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = size; tempCanvas.height = size;
+        const tctx = tempCanvas.getContext('2d');
+        
+        // Градиентный фон
+        const grad = tctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+        grad.addColorStop(0, '#00ffaa');
+        grad.addColorStop(0.5, '#0088ff');
+        grad.addColorStop(1, '#aa00ff');
+        tctx.fillStyle = grad;
+        tctx.fillRect(0, 0, size, size);
+        
+        // Неоновые линии
+        tctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        tctx.lineWidth = 2;
+        for(let i=0; i<8; i++) {
+            tctx.beginPath();
+            tctx.moveTo(Math.random()*size, Math.random()*size);
+            tctx.bezierCurveTo(Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size, Math.random()*size);
+            tctx.stroke();
+        }
+        
+        // Светящиеся точки
+        for(let i=0; i<20; i++) {
+            tctx.beginPath();
+            tctx.arc(Math.random()*size, Math.random()*size, Math.random()*3+1, 0, Math.PI*2);
+            tctx.fillStyle = `hsla(${Math.random()*360}, 100%, 70%, 0.8)`;
+            tctx.fill();
+        }
+        
+        return tempCanvas;
+    }
+
+    // === 🧩 СОЗДАНИЕ ПАЗЛОВ ===
+    function createPuzzlePieces(image, rows=3, cols=3) {
+        const pieceW = image.width / cols;
+        const pieceH = image.height / rows;
+        const pieces = [];
+        
+        for(let r=0; r<rows; r++) {
+            for(let c=0; c<cols; c++) {
+                // Создаём канвас для куска пазла
+                const pCanvas = document.createElement('canvas');
+                pCanvas.width = pieceW; pCanvas.height = pieceH;
+                const pCtx = pCanvas.getContext('2d');
+                
+                // Вырезаем кусок из исходного изображения
+                pCtx.drawImage(image, c*pieceW, r*pieceH, pieceW, pieceH, 0, 0, pieceW, pieceH);
+                
+                // Позиция: разброс по экрану
+                const screenW = canvas.width, screenH = canvas.height;
+                pieces.push({
+                    canvas: pCanvas,
+                    x: Math.random() * (screenW - pieceW),
+                    y: Math.random() * (screenH - pieceH),
+                    targetX: 50 + c * pieceW, // Целевая позиция в сетке
+                    targetY: 100 + r * pieceH,
+                    w: pieceW, h: pieceH,
+                    row: r, col: c,
+                    snapped: false,
+                    rotation: (Math.random() - 0.5) * 0.3, // Легкий поворот
+                    rotSpeed: (Math.random() - 0.5) * 0.02,
+                    vx: (Math.random() - 0.5) * 0.5, // Начальная скорость разлёта
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+        return pieces;
+    }
+
+    // === ✨ ЭФФЕКТЫ: ЧАСТИЦЫ, ПУЗЫРЬКИ, ФЕЙЕРВЕРК ===
+    function createParticles(x, y, color, count=12) {
+        for(let i=0; i<count; i++) {
+            particles.push({
+                x, y,
+                vx: (Math.random()-0.5)*1.5,
+                vy: (Math.random()-0.5)*1.5-0.5,
+                life: 1,
+                color,
+                size: Math.random()*4+2
+            });
+        }
+    }
+    
+    function createFirework(x, y, color) {
+        for(let i=0; i<25; i++) {
+            const a = (i/25)*Math.PI*2, s = Math.random()*0.7+0.3;
+            particles.push({
+                x, y,
+                vx: Math.cos(a)*s,
+                vy: Math.sin(a)*s-0.2,
+                life: 1,
+                color,
+                size: Math.random()*3+2,
+                isFirework: true
+            });
+        }
+    }
+    
+    function drawParticles() {
+        for(let i=particles.length-1; i>=0; i--) {
+            let p = particles[i];
+            p.x += p.vx; p.y += p.vy; p.life -= p.isFirework ? 0.015 : 0.025;
+            p.vy += 0.01;
+            if(p.life <= 0) { particles.splice(i,1); continue; }
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI*2);
+            const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*p.life);
+            grad.addColorStop(0, p.color);
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = p.isFirework ? 20 : 15;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    }
+    
+    function createBubble() {
+        const colors = ['rgba(0,255,170,0.15)','rgba(102,153,255,0.15)','rgba(255,102,170,0.15)'];
+        bubbles.push({
+            x: Math.random()*canvas.width,
+            y: canvas.height + 20,
+            size: Math.random()*15+10,
+            speed: Math.random()*0.8+0.3,
+            wobble: Math.random()*Math.PI*2,
+            wobbleSpeed: Math.random()*0.03+0.01,
+            color: colors[Math.floor(Math.random()*colors.length)],
+            popTimer: Math.random()*300+150
+        });
+    }
+    
+    function createBubblePop(x, y, color) {
+        for(let i=0; i<6; i++) {
+            const a = (i/6)*Math.PI*2, s = Math.random()*0.8+0.3;
+            bubblePopEffects.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, life:1, color, size:Math.random()*2+1});
+        }
+    }
+    
+    function drawBubbles() {
+        bubbleSpawnTimer++;
+        if(bubbleSpawnTimer%50===0 && bubbles.length<6) createBubble();
+        
+        for(let i=bubbles.length-1; i>=0; i--) {
+            let b = bubbles[i];
+            b.y -= b.speed;
+            b.wobble += b.wobbleSpeed;
+            b.x += Math.sin(b.wobble)*0.3;
+            b.popTimer--;
+            
+            if(b.popTimer<=0 || b.y < -20) {
+                createBubblePop(b.x, b.y, b.color);
+                playSound('pop');
+                bubbles.splice(i,1);
+                continue;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+            ctx.strokeStyle = b.color;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(b.x - b.size*0.3, b.y - b.size*0.3, b.size*0.25, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.fill();
+        }
+        
+        for(let i=bubblePopEffects.length-1; i>=0; i--) {
+            let p = bubblePopEffects[i];
+            p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+            if(p.life<=0) { bubblePopEffects.splice(i,1); continue; }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.life;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    // === 🔊 ЗВУК ===
+    let audioEnabled = false, audioCtx = null;
+    function initAudio() {
+        if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); audioEnabled = true; }
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function playSound(type) {
+        if(!audioEnabled || !audioCtx) return;
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        try {
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination); const n = audioCtx.currentTime;
+            if(type==='drag') { o.type='sine'; o.frequency.setValueAtTime(300,n); g.gain.setValueAtTime(0.03,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.05); o.start(n); o.stop(n+0.05); }
+            else if(type==='snap') { o.type='triangle'; o.frequency.setValueAtTime(500,n); o.frequency.setValueAtTime(700,n+0.05); g.gain.setValueAtTime(0.1,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.15); o.start(n); o.stop(n+0.15); }
+            else if(type==='complete') { o.type='sine'; [440,550,660,880].forEach((f,i)=>{const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioCtx.destination);osc.frequency.setValueAtTime(f,n+i*0.1);gain.gain.setValueAtTime(0.15,n+i*0.1);gain.gain.exponentialRampToValueAtTime(0.001,n+i*0.1+0.3);osc.start(n+i*0.1);osc.stop(n+i*0.1+0.3);}); }
+            else if(type==='pop') { o.type='sine'; o.frequency.setValueAtTime(800,n); o.frequency.exponentialRampToValueAtTime(200,n+0.15); g.gain.setValueAtTime(0.05,n); g.gain.exponentialRampToValueAtTime(0.001,n+0.15); o.start(n); o.stop(n+0.15); }
+        } catch(e){}
+    }
+    document.body.addEventListener('click', initAudio, {once:true});
+    document.body.addEventListener('touchstart', initAudio, {once:true});
+
+    // === 🎮 УПРАВЛЕНИЕ МЫШЬЮ/ТАЧЕМ ===
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    
+    function onPointerDown(e) {
+        if(!isPlaying || isComplete) return;
+        e.preventDefault();
+        const pos = getMousePos(e);
+        
+        // Поиск куска под курсором (с конца массива - верхний слой)
+        for(let i=pieces.length-1; i>=0; i--) {
+            let p = pieces[i];
+            if(p.snapped) continue;
+            if(pos.x > p.x && pos.x < p.x + p.w && pos.y > p.y && pos.y < p.y + p.h) {
+                draggedPiece = p;
+                dragOffset.x = pos.x - p.x;
+                dragOffset.y = pos.y - p.y;
+                // Поднимаем кусок наверх
+                pieces.splice(i,1);
+                pieces.push(p);
+                playSound('drag');
+                break;
+            }
+        }
+    }
+    
+    function onPointerMove(e) {
+        if(!draggedPiece) return;
+        e.preventDefault();
+        const pos = getMousePos(e);
+        draggedPiece.x = pos.x - dragOffset.x;
+        draggedPiece.y = pos.y - dragOffset.y;
+        draggedPiece.rotation += 0.02; // Вращение при перетаскивании
+    }
+    
+    function onPointerUp(e) {
+        if(!draggedPiece) return;
+        e.preventDefault();
+        
+        // Проверка "прилипания" к целевой позиции
+        const dx = draggedPiece.x - draggedPiece.targetX;
+        const dy = draggedPiece.y - draggedPiece.targetY;
+        const dist = Math.hypot(dx, dy);
+        
+        if(dist < snapThreshold) {
+            // Успешное прилипание!
+            draggedPiece.x = draggedPiece.targetX;
+            draggedPiece.y = draggedPiece.targetY;
+            draggedPiece.rotation = 0;
+            draggedPiece.snapped = true;
+            playSound('snap');
+            createParticles(draggedPiece.x + draggedPiece.w/2, draggedPiece.y + draggedPiece.h/2, '#00ffaa', 10);
+            
+            // Проверка победы
+            if(pieces.every(p => p.snapped)) {
+                isComplete = true;
+                taskBox.innerHTML = "🎉 ОБРАЗ ВОССТАНОВЛЕН!";
+                taskBox.style.color = '#00ffaa';
+                // Фейерверк
+                for(let i=0; i<5; i++) {
+                    setTimeout(()=>createFirework(
+                        Math.random()*canvas.width,
+                        Math.random()*canvas.height*0.7,
+                        ['#ffaa00','#00ff88','#0088ff','#ff66aa','#ffff00'][i]
+                    ), i*150);
+                }
+                playSound('complete');
+                setTimeout(showWinMenu, 3000);
+            }
+        } else {
+            // Не попало - лёгкий отскок
+            draggedPiece.vx = -dx * 0.05;
+            draggedPiece.vy = -dy * 0.05;
+        }
+        
+        draggedPiece = null;
+    }
+    
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('mouseleave', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, {passive:false});
+    canvas.addEventListener('touchmove', onPointerMove, {passive:false});
+    canvas.addEventListener('touchend', onPointerUp);
+
+    // === 🎨 ОТРИСОВКА ===
+    function drawPieces() {
+        pieces.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x + p.w/2, p.y + p.h/2);
+            ctx.rotate(p.rotation);
+            
+            // Тень
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.drawImage(p.canvas, -p.w/2, -p.h/2, p.w, p.h);
+            ctx.shadowBlur = 0;
+            
+            // Неоновая обводка
+            ctx.strokeStyle = p.snapped ? 'rgba(0,255,170,0.8)' : 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = p.snapped ? 3 : 1;
+            ctx.strokeRect(-p.w/2, -p.h/2, p.w, p.h);
+            
+            // Блик
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.fillRect(-p.w/2+5, -p.h/2+5, p.w-10, p.h/4);
+            
+            ctx.restore();
+        });
+    }
+    
+    function drawTargetGrid(pieceW, pieceH, rows, cols) {
+        ctx.strokeStyle = 'rgba(0,255,170,0.1)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5,5]);
+        for(let r=0; r<=rows; r++) {
+            const y = 100 + r * pieceH;
+            ctx.beginPath(); ctx.moveTo(50, y); ctx.lineTo(50 + cols*pieceW, y); ctx.stroke();
+        }
+        for(let c=0; c<=cols; c++) {
+            const x = 50 + c * pieceW;
+            ctx.beginPath(); ctx.moveTo(x, 100); ctx.lineTo(x, 100 + rows*pieceH); ctx.stroke();
+        }
+        ctx.setLineDash([]);
+    }
+
+    // === 🎮 ИГРОВОЙ ЦИКЛ ===
+    let aiImage, pieceW, pieceH, rows=3, cols=3;
+    
+    function startGame() {
+        initAudio();
+        infoOverlay.style.display = 'none';
+        isPlaying = true; isComplete = false;
+        taskBox.innerHTML = "Перетащи куски на сетку";
+        taskBox.style.color = '#ffaa00';
+        
+        // Генерация "ИИ-образа" и пазлов
+        aiImage = generateAIImage();
+        pieceW = aiImage.width / cols;
+        pieceH = aiImage.height / rows;
+        pieces = createPuzzlePieces(aiImage, rows, cols);
+        
+        // Анимация "разлёта" при старте
+        pieces.forEach(p => {
+            p.vx = (Math.random()-0.5)*3;
+            p.vy = (Math.random()-0.5)*3;
+        });
+        
+        particles = []; bubbles = []; bubblePopEffects = [];
+    }
+    
+    function showWinMenu() {
+        isPlaying = false;
+        menuTitle.innerHTML = "🧩 ОБРАЗ СОБРАН!<br><span style='font-size:14px;color:#00ff88;'>Ты увидел целостность там, где ИИ видел только части.</span>";
+        actionBtn.innerText = "НОВЫЙ ПАЗЛ";
+        infoOverlay.style.display = 'flex';
+    }
+    
+    function loop(timestamp) {
+        if(!lastTime) lastTime = timestamp;
+        const dt = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+        
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        
+        // Атмосферный фон
+        const grad = ctx.createRadialGradient(canvas.width/2, canvas.height*0.6, 0, canvas.width/2, canvas.height*0.6, canvas.width*0.8);
+        const pulse = 0.02 + Math.sin(timestamp*0.0003)*0.01;
+        grad.addColorStop(0, `rgba(10,15,40,${0.3+pulse})`);
+        grad.addColorStop(0.5, `rgba(5,5,20,${0.5+pulse*0.5})`);
+        grad.addColorStop(1, 'rgba(1,1,5,0.9)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        drawBubbles();
+        
+        if(isPlaying && !isComplete) {
+            // Физика кусков пазла
+            pieces.forEach(p => {
+                if(!p.snapped && p !== draggedPiece) {
+                    p.x += p.vx; p.y += p.vy;
+                    p.vx *= 0.98; p.vy *= 0.98; // Трение
+                    p.rotation += p.rotSpeed;
+                    
+                    // Отскок от границ
+                    if(p.x < 0 || p.x + p.w > canvas.width) p.vx *= -0.5;
+                    if(p.y < 0 || p.y + p.h > canvas.height) p.vy *= -0.5;
+                }
+            });
+            
+            // Отрисовка целевой сетки
+            drawTargetGrid(pieceW, pieceH, rows, cols);
+        }
+        
+        drawPieces();
+        drawParticles();
+        
+        requestAnimationFrame(loop);
+    }
+    
+    // === ЗАПУСК ===
+    actionBtn.addEventListener('click', startGame);
+    window.addEventListener('resize', () => {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    });
+    requestAnimationFrame(loop);
+</script>
+</body>
+</html>
